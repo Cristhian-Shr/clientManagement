@@ -1,0 +1,175 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo de usuários administradores
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      UserRole @default(ADMIN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// Modelo de clientes
+model Client {
+  id                String   @id @default(cuid())
+  name              String
+  email             String   @unique
+  phone             String
+  company           String
+  serviceStartDate  DateTime
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relacionamentos
+  contracts         Contract[]
+  payments          Payment[]
+
+  @@map("clients")
+}
+
+// Modelo de serviços
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  type        ServiceType
+  basePrice   Float    @default(0)
+  trafficDiscount Json? // Configuração de desconto para Tráfego Pago
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  contracts   Contract[]
+  subServices SubService[]
+  plans       Plan[]
+
+  @@map("services")
+}
+
+// Modelo de sub-serviços (para Tráfego Pago)
+model SubService {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Float    @default(0)
+  serviceId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  contracts   Contract[]
+
+  @@map("sub_services")
+}
+
+// Modelo de planos (para Social Media)
+model Plan {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  postsPerMonth Int
+  price       Float
+  serviceId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  contracts   Contract[]
+
+  @@map("plans")
+}
+
+// Modelo de contratos (relaciona cliente com serviço)
+model Contract {
+  id            String   @id @default(cuid())
+  clientId      String
+  serviceId     String
+  subServiceId  String?
+  planId        String?
+  status        ContractStatus @default(ACTIVE)
+  startDate     DateTime
+  endDate       DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relacionamentos
+  client        Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  service       Service     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  subService    SubService? @relation(fields: [subServiceId], references: [id], onDelete: SetNull)
+  plan          Plan?       @relation(fields: [planId], references: [id], onDelete: SetNull)
+  payments      Payment[]
+
+  @@map("contracts")
+}
+
+// Modelo de pagamentos
+model Payment {
+  id              String        @id @default(cuid())
+  contractId      String
+  clientId        String
+  amount          Float
+  dueDate         DateTime
+  paymentDate     DateTime?
+  status          PaymentStatus @default(PENDING)
+  paymentMethod   PaymentMethod
+  description     String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relacionamentos
+  contract        Contract      @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  client          Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+// Enums
+enum UserRole {
+  ADMIN
+  MANAGER
+}
+
+enum ServiceType {
+  WEB_DEVELOPMENT
+  PAID_TRAFFIC
+  HOSTING
+  SOCIAL_MEDIA
+}
+
+enum ContractStatus {
+  ACTIVE
+  INACTIVE
+  CANCELLED
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum PaymentMethod {
+  PIX
+  BANK_TRANSFER
+  CREDIT_CARD
+  DEBIT_CARD
+  CASH
+}

@@ -1,26 +1,180 @@
 @import "tailwindcss";
 
 :root {
+  /* Tema Claro */
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1a1a1a;
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #374151;
+  --muted: #f9fafb;
+  --muted-foreground: #6b7280;
+  --accent: #f3f4f6;
+  --accent-foreground: #374151;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #7c3aed;
+  --radius: 0.5rem;
+  
+  /* Cores adicionais para o tema claro */
+  --sidebar-bg: #f8fafc;
+  --sidebar-border: #e2e8f0;
+  --sidebar-text: #64748b;
+  --sidebar-hover: #e2e8f0;
+  --sidebar-active: #7c3aed;
+  --sidebar-active-text: #ffffff;
+  
+  /* Hover para tema claro */
+  --hover-bg: #f3f4f6;
+  --hover-text: #374151;
+}
+
+[data-theme="dark"] {
+  /* Tema Escuro */
+  --background: #0f0f23;
+  --foreground: #f8fafc;
+  --card: #1a1a2e;
+  --card-foreground: #f8fafc;
+  --popover: #1a1a2e;
+  --popover-foreground: #f8fafc;
+  --primary: #a855f7;
+  --primary-foreground: #ffffff;
+  --secondary: #2d2d44;
+  --secondary-foreground: #e2e8f0;
+  --muted: #1a1a2e;
+  --muted-foreground: #94a3b8;
+  --accent: #2d2d44;
+  --accent-foreground: #e2e8f0;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #2d2d44;
+  --input: #2d2d44;
+  --ring: #a855f7;
+  
+  /* Cores adicionais para o tema escuro */
+  --sidebar-bg: #0f0f23;
+  --sidebar-border: #2d2d44;
+  --sidebar-text: #94a3b8;
+  --sidebar-hover: #2d2d44;
+  --sidebar-active: #a855f7;
+  --sidebar-active-text: #ffffff;
+  
+  /* Hover para tema escuro */
+  --hover-bg: #2d2d44;
+  --hover-text: #e2e8f0;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--border);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
+/* Transições suaves para mudança de tema */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Classes de hover personalizadas */
+.hover-card {
+  transition: background-color 0.2s ease;
+}
+
+.hover-card:hover {
+  background-color: var(--hover-bg) !important;
+}
+
+/* Estilos para toasts */
+[data-sonner-toaster] {
+  z-index: 9999 !important;
+}
+
+[data-sonner-toast] {
+  z-index: 10000 !important;
+}
+
+/* Garantir que os toasts apareçam */
+.sonner-toast {
+  z-index: 9999 !important;
+}
+
+.sonner-toaster {
+  z-index: 9998 !important;
+}
+
+/* Estilos para o modal de pagamento */
+.modal-payment {
+  backdrop-filter: blur(4px);
+}
+
+.modal-payment .card {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Melhorar a aparência dos inputs */
+.modal-payment input,
+.modal-payment select,
+.modal-payment textarea {
+  transition: all 0.2s ease;
+}
+
+.modal-payment input:focus,
+.modal-payment select:focus,
+.modal-payment textarea:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
 }

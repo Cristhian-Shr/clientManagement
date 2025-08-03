@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { useState, useEffect } from "react"
@@ -92,13 +93,22 @@ export default function ServicesPage() {
     setIsFormOpen(true)
   }
 
-  const handleEdit = (service: any) => {
+  const handleEdit = (service: {
+    id: string
+    name: string
+    description: string
+    type: string
+    basePrice: number
+  }) => {
     setSelectedService(service)
     setFormMode('edit')
     setIsFormOpen(true)
   }
 
-  const handleDelete = async (service: any) => {
+  const handleDelete = async (service: {
+    id: string
+    name: string
+  }) => {
     try {
       const response = await fetch(`/api/services/${service.id}`, {
         method: 'DELETE',

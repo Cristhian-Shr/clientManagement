@@ -150,7 +150,14 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {pendingPayments.map((payment: any) => (
+              {pendingPayments.map((payment: {
+                id: string
+                client: string
+                service: string
+                description?: string
+                amount: number
+                dueDate: string
+              }) => (
                 <div key={payment.id} className="flex items-center justify-between p-4 border rounded-lg" style={{ borderColor: 'var(--border)' }}>
                   <div>
                     <p className="font-medium" style={{ color: 'var(--foreground)' }}>{payment.client}</p>
@@ -191,7 +198,10 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {serviceStats.map((service: any, index: number) => (
+              {serviceStats.map((service: {
+                service: string
+                contracts: number
+              }, index: number) => (
                 <div key={index} className="flex items-center justify-between p-4 border rounded-lg" style={{ borderColor: 'var(--border)' }}>
                   <div>
                     <p className="font-medium" style={{ color: 'var(--foreground)' }}>{service.service}</p>

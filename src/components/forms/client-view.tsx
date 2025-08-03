@@ -57,7 +57,7 @@ interface ClientViewProps {
   onClose: () => void
 }
 
-export function ClientView({ client, onClose }: ClientViewProps) {
+export function ClientView({ client }: ClientViewProps) {
   // Função para formatar telefone com máscara
   const formatPhone = (phone: string) => {
     const numbers = phone.replace(/\D/g, '')

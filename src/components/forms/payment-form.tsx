@@ -11,7 +11,17 @@ import { X } from "lucide-react"
 interface PaymentFormProps {
   isOpen: boolean
   onClose: () => void
-  payment?: any
+  payment?: {
+    id: string
+    contractId: string
+    clientId: string
+    amount: number
+    dueDate: string
+    paymentDate?: string | null
+    status: string
+    paymentMethod: string
+    description: string
+  }
   mode: 'create' | 'edit'
 }
 
@@ -118,7 +128,7 @@ export function PaymentForm({ isOpen, onClose, payment, mode }: PaymentFormProps
     }
   }, [payment, mode, isOpen])
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: string | number) => {
     setFormData(prev => ({
       ...prev,
       [field]: value

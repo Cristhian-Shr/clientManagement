@@ -77,9 +77,28 @@ export default function PaymentsPage() {
   const [payments, setPayments] = useState(mockPayments)
   const [loading, setLoading] = useState(true)
   const [isFormOpen, setIsFormOpen] = useState(false)
-  const [selectedPayment, setSelectedPayment] = useState<any>(null)
+  const [selectedPayment, setSelectedPayment] = useState<{
+    id: string
+    contractId: string
+    clientId: string
+    client: string
+    contract: string
+    amount: number
+    dueDate: string
+    paymentDate?: string | null
+    status: string
+    paymentMethod: string
+    description: string
+  } | null>(null)
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create')
-  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; payment: any | null }>({
+  const [deleteDialog, setDeleteDialog] = useState<{ 
+    isOpen: boolean; 
+    payment: {
+      id: string
+      client: string
+      amount: number
+    } | null 
+  }>({
     isOpen: false,
     payment: null
   })
@@ -151,14 +170,34 @@ export default function PaymentsPage() {
     setIsFormOpen(true)
   }
 
-  const handleEdit = (payment: any) => {
+  const handleEdit = (payment: {
+    id: string
+    client: string
+    contract: string
+    amount: number
+    dueDate: string
+    paymentDate?: string | null
+    status: string
+    paymentMethod: string
+    description: string
+    contractId?: string
+    clientId?: string
+  }) => {
     console.log('Editando pagamento:', payment)
-    setSelectedPayment(payment)
+    setSelectedPayment({
+      ...payment,
+      contractId: payment.contractId ?? '',
+      clientId: payment.clientId ?? '',
+    })
     setFormMode('edit')
     setIsFormOpen(true)
   }
 
-  const handleDelete = async (payment: any) => {
+  const handleDelete = async (payment: {
+    id: string
+    client: string
+    amount: number
+  }) => {
     setDeleteDialog({ isOpen: true, payment })
   }
 
@@ -173,7 +212,7 @@ export default function PaymentsPage() {
       if (response.ok) {
         toast.success('Pagamento excluído com sucesso!')
         // Atualizar a lista localmente em vez de recarregar a página
-        setPayments(prev => prev.filter(p => p.id !== deleteDialog.payment.id))
+        setPayments(prev => prev.filter(p => p.id !== deleteDialog.payment!.id))
       } else {
         const errorData = await response.json()
         toast.error(errorData.error || 'Erro ao excluir pagamento')
@@ -196,7 +235,9 @@ export default function PaymentsPage() {
     const loadingToast = toast.loading("Exportando dados...")
     
     setTimeout(() => {
-      toast.dismiss(loadingToast)
+      if (loadingToast) {
+        toast.dismiss(loadingToast)
+      }
       toast.success("Dados exportados com sucesso!")
     }, 2000)
   }
@@ -369,7 +410,7 @@ export default function PaymentsPage() {
       <PaymentForm
         isOpen={isFormOpen}
         onClose={handleFormClose}
-        payment={selectedPayment}
+        payment={selectedPayment ?? undefined}
         mode={formMode}
       />
 

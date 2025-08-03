@@ -11,7 +11,16 @@ import { X, Plus, Trash2 } from "lucide-react"
 interface ServiceFormProps {
   isOpen: boolean
   onClose: () => void
-  service?: any
+  service?: {
+    id: string
+    name: string
+    description: string
+    type: string
+    basePrice: number
+    subServices?: SubService[]
+    plans?: Plan[]
+    trafficDiscount?: TrafficDiscount
+  }
   mode: 'create' | 'edit'
 }
 
@@ -83,7 +92,7 @@ export function ServiceForm({ isOpen, onClose, service, mode }: ServiceFormProps
     }
   }, [service, mode])
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: string | number | boolean | object) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -97,7 +106,7 @@ export function ServiceForm({ isOpen, onClose, service, mode }: ServiceFormProps
     }))
   }
 
-  const updateSubService = (index: number, field: string, value: any) => {
+  const updateSubService = (index: number, field: string, value: string | number) => {
     setFormData(prev => ({
       ...prev,
       subServices: prev.subServices.map((subService, i) => 
@@ -120,7 +129,7 @@ export function ServiceForm({ isOpen, onClose, service, mode }: ServiceFormProps
     }))
   }
 
-  const updatePlan = (index: number, field: string, value: any) => {
+  const updatePlan = (index: number, field: string, value: string | number) => {
     setFormData(prev => ({
       ...prev,
       plans: prev.plans.map((plan, i) => 

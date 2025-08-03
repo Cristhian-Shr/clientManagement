@@ -69,7 +69,11 @@ export async function POST(request: NextRequest) {
     // Criar sub-serviços se for do tipo PAID_TRAFFIC
     if (type === 'PAID_TRAFFIC' && subServices && subServices.length > 0) {
       await Promise.all(
-        subServices.map((subService: any) =>
+                    subServices.map((subService: {
+              name: string
+              description: string
+              price: number
+            }) =>
           prisma.subService.create({
             data: {
               name: subService.name,
@@ -85,7 +89,12 @@ export async function POST(request: NextRequest) {
     // Criar planos se for do tipo SOCIAL_MEDIA
     if (type === 'SOCIAL_MEDIA' && plans && plans.length > 0) {
       await Promise.all(
-        plans.map((plan: any) =>
+                    plans.map((plan: {
+              name: string
+              description: string
+              postsPerMonth: number
+              price: number
+            }) =>
           prisma.plan.create({
             data: {
               name: plan.name,

@@ -46,7 +46,24 @@ interface SelectedService {
 }
 
 interface ClientFormProps {
-  onSubmit: (clientData: any) => void
+  onSubmit: (clientData: {
+    name: string
+    email: string
+    phone: string
+    company: string
+    serviceStartDate: string
+    services: Array<{
+      serviceId: string
+      subServiceId?: string
+      subServiceIds?: string[]
+      planId?: string
+    }>
+    customDiscount?: {
+      enabled: boolean
+      value: number
+      type: 'percentage' | 'fixed'
+    } | null
+  }) => void
   onCancel: () => void
   loading?: boolean
 }
@@ -92,7 +109,7 @@ export function ClientForm({ onSubmit, onCancel, loading = false }: ClientFormPr
     }
 
     loadServices()
-  }, [])
+  }, [toast])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -148,7 +165,12 @@ export function ClientForm({ onSubmit, onCancel, loading = false }: ClientFormPr
       ...formData,
       phone: getUnmaskedValue(formData.phone),
       services: selectedServices,
-      customDiscount: customDiscount.enabled ? customDiscount : null
+      customDiscount: customDiscount.enabled
+        ? {
+            ...customDiscount,
+            type: customDiscount.type as 'percentage' | 'fixed'
+          }
+        : null
     })
   }
 
@@ -175,7 +197,7 @@ export function ClientForm({ onSubmit, onCancel, loading = false }: ClientFormPr
     setSelectedServices(prev => prev.filter((_, i) => i !== index))
   }
 
-  const updateSelectedService = (index: number, field: keyof SelectedService, value: any) => {
+  const updateSelectedService = (index: number, field: keyof SelectedService, value: string | string[] | undefined) => {
     setSelectedServices(prev => prev.map((service, i) => {
       if (i === index) {
         const updated = { ...service, [field]: value }
@@ -196,7 +218,11 @@ export function ClientForm({ onSubmit, onCancel, loading = false }: ClientFormPr
   // Função para calcular desconto quando ambos os sub-serviços são selecionados
   const calculateTrafficDiscount = (selectedSubServices: string[], allSubServices: SubService[], service: Service) => {
     if (selectedSubServices.length === 2 && service.trafficDiscount) {
-      const discountConfig = service.trafficDiscount as any
+      const discountConfig = service.trafficDiscount as {
+        enabled: boolean
+        percentage: number
+        description?: string
+      }
       if (discountConfig.enabled && discountConfig.percentage > 0) {
         const totalPrice = selectedSubServices.reduce((sum, subServiceId) => {
           const subService = allSubServices.find(ss => ss.id === subServiceId)
@@ -350,7 +376,7 @@ export function ClientForm({ onSubmit, onCancel, loading = false }: ClientFormPr
         {selectedServices.length === 0 && (
           <div className="text-center py-4 border-2 border-dashed rounded-lg" style={{ borderColor: 'var(--border)' }}>
             <p style={{ color: 'var(--muted-foreground)' }}>
-              Clique em "Adicionar Serviço" para selecionar os serviços contratados
+                              Clique em &quot;Adicionar Serviço&quot; para selecionar os serviços contratados
             </p>
           </div>
         )}

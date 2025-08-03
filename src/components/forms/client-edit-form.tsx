@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { useMask } from "@/hooks/use-mask"
-import { Plus, X, Edit } from "lucide-react"
+import { Plus, X } from "lucide-react"
 
 interface SubService {
   id: string
@@ -32,17 +32,7 @@ interface Service {
   plans: Plan[]
 }
 
-interface Contract {
-  id: string
-  serviceId: string
-  subServiceId?: string
-  planId?: string
-  status: string
-  startDate: string
-  service: Service
-  subService?: SubService
-  plan?: Plan
-}
+
 
 interface SelectedService {
   contractId?: string
@@ -53,8 +43,50 @@ interface SelectedService {
 }
 
 interface ClientEditFormProps {
-  client: any
-  onSubmit: (clientData: any) => void
+  client: {
+    id: string
+    name: string
+    email: string
+    phone: string
+    company: string
+    serviceStartDate: string
+    contracts: Array<{
+      id: string
+      serviceId: string
+      subServiceId?: string
+      planId?: string
+      service: {
+        id: string
+        name: string
+        type: string
+      }
+      subService?: {
+        id: string
+        name: string
+      }
+      plan?: {
+        id: string
+        name: string
+      }
+    }>
+  }
+  onSubmit: (clientData: {
+    name: string
+    email: string
+    phone: string
+    company: string
+    serviceStartDate: string
+    services: Array<{
+      serviceId: string
+      subServiceId?: string
+      planId?: string
+    }>
+    customDiscount?: {
+      enabled: boolean
+      value: number
+      type: 'percentage' | 'fixed'
+    } | null
+  }) => void
   onCancel: () => void
   loading?: boolean
 }
@@ -115,7 +147,7 @@ export function ClientEditForm({ client, onSubmit, onCancel, loading = false }: 
 
       // Converter contratos existentes para selectedServices
       if (client.contracts && client.contracts.length > 0) {
-        const existingServices: SelectedService[] = client.contracts.map((contract: Contract) => ({
+        const existingServices: SelectedService[] = client.contracts.map((contract) => ({
           contractId: contract.id,
           serviceId: contract.serviceId,
           subServiceId: contract.subServiceId,
@@ -181,7 +213,11 @@ export function ClientEditForm({ client, onSubmit, onCancel, loading = false }: 
       ...formData,
       phone: getUnmaskedValue(formData.phone),
       services: selectedServices,
-      customDiscount: customDiscount.enabled ? customDiscount : null
+      customDiscount: customDiscount.enabled ? {
+        enabled: customDiscount.enabled,
+        value: customDiscount.value,
+        type: customDiscount.type as 'percentage' | 'fixed'
+      } : null
     })
   }
 
@@ -243,19 +279,7 @@ export function ClientEditForm({ client, onSubmit, onCancel, loading = false }: 
     return `${service.name} - R$ ${service.basePrice.toLocaleString('pt-BR')}`
   }
 
-  const getContractDisplay = (contract: Contract) => {
-    let display = contract.service.name
-    
-    if (contract.subService) {
-      display += ` - ${contract.subService.name}`
-    }
-    
-    if (contract.plan) {
-      display += ` (${contract.plan.name})`
-    }
-    
-    return display
-  }
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -343,7 +367,7 @@ export function ClientEditForm({ client, onSubmit, onCancel, loading = false }: 
         {selectedServices.length === 0 && (
           <div className="text-center py-4 border-2 border-dashed rounded-lg" style={{ borderColor: 'var(--border)' }}>
             <p style={{ color: 'var(--muted-foreground)' }}>
-              Clique em "Adicionar Serviço" para selecionar os serviços contratados
+                              Clique em &quot;Adicionar Serviço&quot; para selecionar os serviços contratados
             </p>
           </div>
         )}

@@ -1,7 +1,7 @@
 import { toast } from "sonner"
 
 export const useToast = () => {
-  const success = (message: string, options?: any) => {
+  const success = (message: string, options?: Record<string, unknown>) => {
     console.log('Toast success chamado:', message)
     try {
       toast.success(message, {
@@ -13,7 +13,7 @@ export const useToast = () => {
     }
   }
 
-  const error = (message: string, options?: any) => {
+  const error = (message: string, options?: Record<string, unknown>) => {
     console.log('Toast error chamado:', message)
     try {
       toast.error(message, {
@@ -25,7 +25,7 @@ export const useToast = () => {
     }
   }
 
-  const warning = (message: string, options?: any) => {
+  const warning = (message: string, options?: Record<string, unknown>) => {
     console.log('Toast warning chamado:', message)
     try {
       toast.warning(message, {
@@ -37,7 +37,7 @@ export const useToast = () => {
     }
   }
 
-  const info = (message: string, options?: any) => {
+  const info = (message: string, options?: Record<string, unknown>) => {
     console.log('Toast info chamado:', message)
     try {
       toast.info(message, {
@@ -49,7 +49,7 @@ export const useToast = () => {
     }
   }
 
-  const loading = (message: string, options?: any) => {
+  const loading = (message: string, options?: Record<string, unknown>) => {
     console.log('Toast loading chamado:', message)
     try {
       return toast.loading(message, {

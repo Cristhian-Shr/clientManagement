@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -82,7 +82,7 @@ export default function ClientsPage() {
   const toast = useToast()
 
   // Carregar clientes da API
-  const loadClients = async () => {
+  const loadClients = useCallback(async () => {
     try {
       setIsLoadingClients(true)
       const response = await fetch('/api/clients')
@@ -99,11 +99,11 @@ export default function ClientsPage() {
     } finally {
       setIsLoadingClients(false)
     }
-  }
+  }, [toast])
 
   useEffect(() => {
     loadClients()
-  }, [])
+  }, [loadClients])
 
   const filteredClients = clients.filter(client =>
     client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -144,7 +144,24 @@ export default function ClientsPage() {
     }
   }
 
-  const handleAddClient = async (clientData: any) => {
+  const handleAddClient = async (clientData: {
+    name: string
+    email: string
+    phone: string
+    company: string
+    serviceStartDate: string
+    services?: Array<{
+      serviceId: string
+      subServiceId?: string
+      subServiceIds?: string[]
+      planId?: string
+    }>
+    customDiscount?: {
+      enabled: boolean
+      value: number
+      type: 'percentage' | 'fixed'
+    } | null
+  }) => {
     try {
       setIsLoading(true)
       
@@ -187,7 +204,24 @@ export default function ClientsPage() {
     }
   }
 
-  const handleEditClient = async (clientData: any) => {
+  const handleEditClient = async (clientData: {
+    name: string
+    email: string
+    phone: string
+    company: string
+    serviceStartDate: string
+    services?: Array<{
+      serviceId: string
+      subServiceId?: string
+      subServiceIds?: string[]
+      planId?: string
+    }>
+    customDiscount?: {
+      enabled: boolean
+      value: number
+      type: 'percentage' | 'fixed'
+    } | null
+  }) => {
     if (!selectedClient) return
 
     try {
@@ -216,7 +250,7 @@ export default function ClientsPage() {
         throw new Error(error.error || 'Erro ao atualizar cliente')
       }
 
-      const updatedClient = await clientResponse.json()
+      await clientResponse.json()
       
       toast.success(`Cliente "${clientData.name}" atualizado com sucesso!`)
 

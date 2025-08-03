@@ -20,7 +20,7 @@ export default function SettingsPage() {
     toast.loading("Salvando configurações...")
     
     setTimeout(() => {
-      toast.dismiss()
+      toast.dismissAll()
       toast.success("Configurações salvas com sucesso!")
     }, 2000)
   }

@@ -6,11 +6,12 @@ const prisma = new PrismaClient()
 // GET - Buscar pagamento específico
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const payment = await prisma.payment.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         contract: {
           include: {
@@ -42,7 +43,7 @@ export async function GET(
 // PUT - Atualizar pagamento
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await request.json()
@@ -56,9 +57,10 @@ export async function PUT(
       )
     }
 
+    const { id } = await params
     // Atualizar o pagamento
     const payment = await prisma.payment.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         contractId,
         clientId,
@@ -93,14 +95,15 @@ export async function PUT(
 // DELETE - Excluir pagamento
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log('Tentando excluir pagamento:', params.id)
+    const { id } = await params
+    console.log('Tentando excluir pagamento:', id)
 
     // Verificar se o pagamento existe
-    const payment = await prisma.payment.findUnique({
-      where: { id: params.id },
+          const payment = await prisma.payment.findUnique({
+        where: { id },
       include: {
         client: true,
         contract: {
@@ -112,7 +115,7 @@ export async function DELETE(
     })
 
     if (!payment) {
-      console.log('Pagamento não encontrado:', params.id)
+      console.log('Pagamento não encontrado:', id)
       return NextResponse.json(
         { error: 'Pagamento não encontrado' },
         { status: 404 }
@@ -128,10 +131,10 @@ export async function DELETE(
 
     // Excluir o pagamento
     await prisma.payment.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
-    console.log('Pagamento excluído com sucesso:', params.id)
+            console.log('Pagamento excluído com sucesso:', id)
     return NextResponse.json({ 
       message: 'Pagamento excluído com sucesso',
       deletedPayment: {

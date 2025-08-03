@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
@@ -117,6 +118,7 @@ export async function PUT(
                 description: plan.description,
                 postsPerMonth: plan.postsPerMonth || 0,
                 price: plan.price || 0,
+                serviceId: id,
               }
             })
           )
